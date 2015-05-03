@@ -2,7 +2,6 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
-
 -- -----------------------------------------------------
 -- Schema BazarPapeleriaLulita
 -- -----------------------------------------------------
@@ -10,29 +9,42 @@ CREATE SCHEMA IF NOT EXISTS `BazarPapeleriaLulita` DEFAULT CHARACTER SET latin1 
 USE `BazarPapeleriaLulita` ;
 
 -- -----------------------------------------------------
+-- Table `BazarPapeleriaLulita`.`CUENTAS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `CUENTAS`;
+CREATE TABLE `CUENTAS`(
+			idCuentas INT NOT NULL auto_increment,
+			idUsuario VARCHAR(10) NOT NULL,
+			idContrasena VARCHAR(10) NOT NULL,
+			tipoCuenta INT(1) NOT NULL,
+			CONSTRAINT idC PRIMARY KEY(IdCuentas,IdUsuario),
+			UNIQUE (IdUsuario)
+);
+
+-- -----------------------------------------------------
 -- Table `BazarPapeleriaLulita`.`PRODUCTO`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `PRODUCTO`;
 CREATE TABLE `PRODUCTO` (
-	idProducto int not null primary key auto_increment,
-	descripcionProducto varchar(100),
-	precioUnitarioReal float,
-	precioUnitarioIva float,
-	stock int
+	idProducto INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	descripcionProducto VARCHAR(100),
+	precioUnitarioReal FLOAT,
+	precioUnitarioIva FLOAT,
+	stock_Inicial INT,
+	stock_Actual INT
 );
-
 -- -----------------------------------------------------
 -- Table `BazarPapeleriaLulita`.`CLIENTE`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `CLIENTE`;
 CREATE TABLE `CLIENTE` (
-	idCliente int not null primary key auto_increment,
-	nombre varchar(50),
-	apellido varchar(50),	
-	direccion varchar(50),
-	fechaDeNacimiento date,
-	rucCedula int,
-	telefono int
+	idCliente INT NOT NULL AUTO_INCREMENT,
+	nombreApellido VARCHAR(100) NOT NULL,	
+	direccion VARCHAR(50) NOT NULL,
+	fechaDeNacimiento DATE,
+	rucCedula VARCHAR(13) NOT NULL,
+	telefono VARCHAR(10),
+	CONSTRAINT idC PRIMARY KEY(idCliente,rucCedula)
 );
 
 -- -----------------------------------------------------
@@ -40,10 +52,12 @@ CREATE TABLE `CLIENTE` (
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `FACTURA`;
 CREATE TABLE `FACTURA` (
-	idFactura int not null primary key auto_increment,
-	idCliente int not null,
-	fecha date,
-	foreign key(idCliente) references CLIENTE (idCliente)
+	idFactura INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	idCliente INT NOT NULL,
+	fecha DATETIME NOT NULL,
+	idCuentas INT NOT NULL,
+	FOREIGN KEY (idCliente) REFERENCES CLIENTE (idCliente),
+	FOREIGN KEY (idCuentas) REFERENCES CUENTAS (idCuentas)
 );
 
 -- -----------------------------------------------------
@@ -51,12 +65,13 @@ CREATE TABLE `FACTURA` (
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `DETALLE`;
 CREATE TABLE `DETALLE` (
-	idDetalle int not null primary key auto_increment,
-	cantidadProducto int,
-	subTotal decimal,
-	total float,
-	idProducto int not null,
-	foreign key(idProducto) references PRODUCTO(idProducto),
-	idFactura int not null,
-	foreign key(idFactura) references FACTURA(idFactura)
+	idDetalle INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	cantidadProducto INT,
+	precioUnitario FLOAT,
+	precioTotalProducto FLOAT,
+	idProducto INT NOT NULL,
+	idFactura INT NOT NULL,
+	FOREIGN KEY(idProducto) REFERENCES PRODUCTO(idProducto),
+	FOREIGN KEY(idFactura) REFERENCES FACTURA(idFactura)
 );
+

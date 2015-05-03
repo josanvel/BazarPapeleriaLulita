@@ -27,6 +27,8 @@ class Ui_BotonesReportes(object):
     def setupUi(self, BotonesReportes):
         BotonesReportes.setObjectName(_fromUtf8("BotonesReportes"))
         BotonesReportes.resize(450, 370)
+        BotonesReportes.setMinimumSize(QtCore.QSize(450, 370))
+        BotonesReportes.setMaximumSize(QtCore.QSize(450, 370))
         self.btnReporteProductos = QtGui.QPushButton(BotonesReportes)
         self.btnReporteProductos.setGeometry(QtCore.QRect(25, 180, 410, 40))
         font = QtGui.QFont()
@@ -72,7 +74,7 @@ class Ui_BotonesReportes(object):
         QtCore.QMetaObject.connectSlotsByName(BotonesReportes)
 
     def retranslateUi(self, BotonesReportes):
-        BotonesReportes.setWindowTitle(_translate("BotonesReportes", "Form", None))
+        BotonesReportes.setWindowTitle(_translate("BotonesReportes", "Reportes", None))
         self.btnReporteProductos.setToolTip(_translate("BotonesReportes", "<html><head/><body><p>Reporte Productos</p></body></html>", None))
         self.btnReporteProductos.setText(_translate("BotonesReportes", "REPORTE PRODUCTOS", None))
         self.btnRegresarReportes.setToolTip(_translate("BotonesReportes", "<html><head/><body><p><span style=\" color:#ffffff;\">REGRESAR</span></p></body></html>", None))

@@ -9,7 +9,6 @@ from BotonesReportes import Ui_BotonesReportes
 from pyReporteGanancia import MyformReporteGanancias
 from pyReporteProducto import MyformReporteProductos
 
-
 class MyformBotonesReportes(QtGui.QMainWindow):
         def __init__(self, parent=None):
                 QtGui.QWidget.__init__(self, parent)
@@ -20,9 +19,6 @@ class MyformBotonesReportes(QtGui.QMainWindow):
                 self.connect(self.uiBotonesReportes.btnRegresarReportes, QtCore.SIGNAL("clicked()"), self.regresarReportes)
                 self.connect(self.uiBotonesReportes.btnReporteGanancias, QtCore.SIGNAL("clicked()"), self.entrarReporteGanancias)
                 self.connect(self.uiBotonesReportes.btnReporteProductos, QtCore.SIGNAL("clicked()"), self.entrarReporteProductos)
-
-        
-
 
         def entrarReporteGanancias(self):
                 self.hide()

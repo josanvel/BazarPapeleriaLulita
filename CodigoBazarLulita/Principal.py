@@ -1,3 +1,4 @@
+#!/usr/bin/python
 '''
 Created on 15/03/2015
 
@@ -5,12 +6,12 @@ Created on 15/03/2015
 '''
 import sys
 from PyQt4 import QtGui
-from pyVentanaPrincipal import pyVentanaP
+from pyLogin import pyLoginP
 
 def main():
     aplicacion = QtGui.QApplication(sys.argv)
-    ventana = pyVentanaP()
-    ventana.show()
+    login = pyLoginP()
+    login.show()
     sys.exit(aplicacion.exec_())
 
 if __name__ == '__main__':

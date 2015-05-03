@@ -1,0 +1,313 @@
+######### Procedure Ingresar Cuentas #########
+DROP PROCEDURE IF EXISTS PRInsertCuenta;
+DELIMITER //
+CREATE PROCEDURE PRInsertCuenta
+		(IN NombreCuenta VARCHAR(10),
+		 IN PasswCuenta VARCHAR(10),
+		 IN TipoCuenta INT(1))
+	BEGIN
+		INSERT INTO CUENTAS (idUsuario, idContrasena, tipoCuenta) 
+		VALUES (NombreCuenta, PasswCuenta,TipoCuenta);
+	END //
+DELIMITER ;
+CALL PRInsertCuenta('a','a','1');
+CALL PRInsertCuenta('jose','1234','1');
+CALL PRInsertCuenta('grace','4321','2');
+SELECT * FROM CUENTAS;
+
+######### Procedure Buscar Cuenta #########
+DROP PROCEDURE IF EXISTS PRQueryBuscarCuenta;	
+DELIMITER //
+CREATE PROCEDURE PRQueryBuscarCuenta	
+		(IN NombreCuenta VARCHAR(10),
+		 IN PasswCuenta VARCHAR(10))
+	BEGIN
+		SELECT * FROM CUENTAS 
+		WHERE idUsuario=NombreCuenta 
+		AND idContrasena=PasswCuenta;
+	END //
+DELIMITER ;
+CALL PRQueryBuscarCuenta('jose','34');
+
+######### Procedure Buscar Cuenta #########
+DROP PROCEDURE IF EXISTS PRQueryCuentaUser;	
+DELIMITER //
+CREATE PROCEDURE PRQueryCuentaUser	
+		(IN NombreCuenta VARCHAR(10))
+	BEGIN
+		SELECT * FROM CUENTAS 
+		WHERE idUsuario=NombreCuenta;
+	END //
+DELIMITER ;
+CALL PRQueryCuentaUser('a');
+
+######### Procedure Actualizar Contrasena-Cuenta #########
+DROP PROCEDURE IF EXISTS PRUpdateCuenta;
+DELIMITER //
+CREATE PROCEDURE PRUpdateCuenta
+		(IN NombreCuenta VARCHAR(10),
+		 IN PasswCuenta VARCHAR(10)) 
+	MODIFIES SQL DATA
+	BEGIN
+		UPDATE CUENTAS 
+		SET idContrasena=PasswCuenta 
+		WHERE idUsuario =NombreCuenta;
+	END //
+DELIMITER ;
+CALL PRUpdateCuenta('jose', '12');
+
+######### Procedure Ingresar Producto #########
+DROP PROCEDURE IF EXISTS PRInsertProducto;
+DELIMITER //
+CREATE PROCEDURE PRInsertProducto
+		(IN descripcionProducto varchar(100),
+		 IN precioUnitarioReal float,
+		 IN precioUnitarioIva float,
+		 IN stock_Inicial int) 
+	BEGIN
+		INSERT INTO PRODUCTO (descripcionProducto, precioUnitarioReal, precioUnitarioIva, stock_Inicial, stock_Actual) 
+		VALUES (descripcionProducto, precioUnitarioReal, precioUnitarioIva, stock_Inicial, stock_Inicial);
+	END //
+DELIMITER ;
+CALL PRInsertProducto('Cuaderno',1.00,1.15,12);
+CALL PRInsertProducto('Lapiz',0.25,0.30,24);
+CALL PRInsertProducto('Juego Geometrico',1.50,1.60,5);
+CALL PRInsertProducto('Lapiz Mecanico',0.70,0.80,9);
+CALL PRInsertProducto('Borrador Blanco',0.10,0.15,15);
+SELECT * from PRODUCTO where descripcionProducto like 'cuader%';
+
+######### Procedure Buscar Producto #########
+DROP PROCEDURE IF EXISTS PRQueryBuscarProducto;	
+DELIMITER //
+CREATE PROCEDURE PRQueryBuscarProducto	
+		(IN descripcionProducto varchar(100))
+	BEGIN
+		SELECT prod.idProducto AS IdProducto, prod.descripcionProducto AS Descripcion, prod.precioUnitarioReal AS PrecioReal, prod.precioUnitarioIva AS PrecioIva,prod.stock_Actual AS Stock
+		FROM PRODUCTO prod
+		WHERE prod.descripcionProducto = descripcionProducto;
+	END //
+DELIMITER ;
+CALL PRQueryBuscarProducto('lapiz');
+
+######### Procedure Buscar Producto #########
+####### Para obtener la direccion del cliente
+DROP PROCEDURE IF EXISTS PRQueryBuscarProductoID;	
+DELIMITER //
+CREATE PROCEDURE PRQueryBuscarProductoID(IN IdProducto INT)
+	BEGIN
+		SELECT  prod.descripcionProducto AS Descripcion, prod.stock_Actual AS Stock, prod.precioUnitarioIva AS PrecioUnitario
+		FROM PRODUCTO prod
+		WHERE prod.idProducto = IdProducto;
+	END //
+DELIMITER ;
+CALL PRQueryBuscarProductoID(3);
+
+######### Procedure Buscar Producto #########
+DROP PROCEDURE IF EXISTS PRQueryProducto;	
+DELIMITER //
+CREATE PROCEDURE PRQueryProducto()
+	BEGIN
+		SELECT * FROM PRODUCTO;
+	END //
+DELIMITER ;
+CALL PRQueryProducto();
+
+######### Procedure Buscar Producto #########
+DROP PROCEDURE IF EXISTS PRQueryProductoFecha;	
+DELIMITER //
+CREATE PROCEDURE PRQueryProductoFecha
+				(IN fechaInicial DATE,
+				 IN fechaFinal DATE)
+	BEGIN
+		SELECT p.descripcionProducto, d.cantidadProducto, d.precioUnitario, d.precioTotalProducto,
+			   c.nombreApellido, c.rucCedula, f.fecha, cu.idUsuario
+		FROM CLIENTE c
+		INNER JOIN FACTURA f
+		INNER JOIN DETALLE d 
+		INNER JOIN CUENTAS cu
+		INNER JOIN PRODUCTO p
+		WHERE c.idCliente = f.idCliente
+			AND f.idFactura = d.idFactura
+			AND cu.idCuentas = f.idCuentas
+			AND p.idProducto = d.idProducto
+			AND f.fecha between fechaInicial AND fechaFinal;
+	END //
+DELIMITER ;
+CALL PRQueryProductoFecha('2015-05-02','2015-05-03');
+
+######### Procedure Actualizar Producto #########
+DROP PROCEDURE IF EXISTS PRUpdateProducto;
+DELIMITER //
+CREATE PROCEDURE PRUpdateProducto
+		(IN idProd int,
+		 IN descProd varchar(100),
+		 IN precReal float,
+		 IN precIva float,
+		 IN stock_Inicial int,
+		 IN stock_Actual int) 
+	MODIFIES SQL DATA
+	BEGIN
+		UPDATE PRODUCTO 
+		SET descripcionProducto=descProd, precioUnitarioReal=precReal,precioUnitarioIva=precIva, stock_Inicial=stock_Inicial, stock_Actual=stock_Actual 
+		WHERE idProducto =IdProd;
+	END //
+DELIMITER ;
+CALL PRUpdateProducto(1,'Talco Rico de pies', 2, 2.20, 10,10);
+CALL PRUpdateProducto(2,'Lapiz', 0.3, 0.35, 12,12);
+CALL PRUpdateProducto(3,'Juego Geometrico', 1, 1.10, 6,6);
+CALL PRUpdateProducto(4,'Lapiz Mecanico', 0.4, 0.5, 15,15);
+CALL PRUpdateProducto(5,'BorradorBlanco', 0.1, 0.20, 9,9);
+
+######### Procedure Actualizar Producto Factura #########
+DROP PROCEDURE IF EXISTS PRUpdateProductoFactura;
+DELIMITER //
+CREATE PROCEDURE PRUpdateProductoFactura
+		(IN idProd int,
+		 IN stock_Actual int) 
+	MODIFIES SQL DATA
+	BEGIN
+		UPDATE PRODUCTO 
+		SET stock_Actual=stock_Actual 
+		WHERE idProducto =IdProd;
+	END //
+DELIMITER ;
+CALL PRUpdateProductoFactura(1,10);
+CALL PRUpdateProductoFactura(2,20);
+CALL PRUpdateProductoFactura(3,14);
+CALL PRUpdateProductoFactura(4,24);
+CALL PRUpdateProductoFactura(5,5);
+
+SELECT * FROM PRODUCTO;
+
+######### Procedure Ingresar Clientes #########
+DROP PROCEDURE IF EXISTS PRInsertCliente;
+DELIMITER //
+CREATE PROCEDURE PRInsertCliente
+		(IN Nombre VARCHAR(100),
+		 IN Direccion VARCHAR(50),
+		 IN FechaN DATE,
+		 IN RucCedula VARCHAR(13),
+		 IN Telefono VARCHAR(10))
+	BEGIN
+		INSERT INTO CLIENTE (nombreApellido, direccion, fechaDeNacimiento, rucCedula, telefono) 
+		VALUES (Nombre, Direccion, FechaN, RucCedula, Telefono);
+	END //
+DELIMITER ;
+CALL PRInsertCliente('Antonio Velez','Guasmo Sur', '1991-05-03','0930566666', '0981836386');
+CALL PRInsertCliente('Grace Franco','La Gaviota', '1993-02-07','0912345678', '043380789');
+CALL PRInsertCliente('Dennis Valle','Centro', '1992-11-25','1234567890', '042457359');
+CALL PRInsertCliente('Nury Bone','Via Daule', null,'1209348765', null);
+SELECT * FROM CLIENTE;
+
+######### Procedure Buscar Cliente #########
+DROP PROCEDURE IF EXISTS PRQueryCliente;	
+DELIMITER //
+CREATE PROCEDURE PRQueryCliente()
+	BEGIN
+		SELECT * FROM CLIENTE;
+	END //
+DELIMITER ;
+CALL PRQueryCliente();
+
+######### Procedure Buscar Cliente #########
+DROP PROCEDURE IF EXISTS PRQueryClienteID;	
+DELIMITER //
+CREATE PROCEDURE PRQueryClienteID
+				(IN idC INT)
+	BEGIN
+		SELECT * FROM CLIENTE
+		WHERE idCliente = idC;
+	END //
+DELIMITER ;
+CALL PRQueryClienteID(3);
+
+######### Procedure Buscar Producto #########
+####### Para INGRESAR/verificar  cliente con su nombre y obtener su ID
+DROP PROCEDURE IF EXISTS PRQueryClienteNombre;	
+DELIMITER //
+CREATE PROCEDURE PRQueryClienteNombre
+				(IN Nombre VARCHAR(100))
+	BEGIN
+		SELECT * FROM CLIENTE
+		WHERE nombreApellido like CONCAT(Nombre,'%');
+	END //
+DELIMITER ;
+CALL PRQueryClienteNombre('Antonio V');
+
+
+######### Procedure Actualizar Direccion-Cliente #########
+DROP PROCEDURE IF EXISTS PRUpdateCliente;
+DELIMITER //
+CREATE PROCEDURE PRUpdateCliente
+		(IN Direccion VARCHAR(50),
+		 IN idC INT,
+		 IN Cedula VARCHAR(13)) 
+	MODIFIES SQL DATA
+	BEGIN
+		UPDATE CLIENTE 
+		SET direccion = Direccion 
+		WHERE idCliente = idC And rucCedula = Cedula;
+	END //
+DELIMITER ;
+call PRUpdateCliente('El parque', 1, '0930566666');
+
+
+######### Procedure Ingresar Factura #########
+DROP PROCEDURE IF EXISTS PRInsertFactura;
+DELIMITER //
+CREATE PROCEDURE PRInsertFactura
+		(IN Cliente INT,
+		 IN FechaN DATETIME,
+		 IN Cuenta INT)
+	BEGIN
+		INSERT INTO FACTURA (idCliente, fecha, idCuentas) 
+		VALUES (Cliente, FechaN, Cuenta);
+	END //
+DELIMITER ;
+CALL PRInsertFactura(3,'2015-05-02 16:17:32', 1);
+CALL PRInsertFactura(5,'2015-05-02 17:17:32', 1);
+SELECT * FROM FACTURA;
+
+######### Procedure Buscar Factura #########
+DROP PROCEDURE IF EXISTS PRQueryFacturaID;	
+DELIMITER //
+CREATE PROCEDURE PRQueryFacturaID
+				(IN idC INT,
+				 IN idCuen INT)
+	BEGIN
+		SELECT * FROM FACTURA
+		WHERE idCliente = idC
+		AND idCuentas = idCuen;
+	END //
+DELIMITER ;
+CALL PRQueryFacturaID(5, 1);
+
+
+######### Procedure Ingresar Detalle #########
+DROP PROCEDURE IF EXISTS PRInsertDetalle;
+DELIMITER //
+CREATE PROCEDURE PRInsertDetalle
+		(IN CantidadProd INT,
+		 IN PrecioUnitario FLOAT,
+		 IN PrecioTotal FLOAT,
+		 IN IdProducto INT,
+		 IN IdFactura INT)
+	BEGIN
+		INSERT INTO DETALLE (cantidadProducto, precioUnitario, precioTotalProducto, idProducto, idFactura) 
+		VALUES (CantidadProd, PrecioUnitario, PrecioTotal, IdProducto, IdFactura);
+	END //
+DELIMITER ;
+CALL PRInsertDetalle(4,'0.45', '1.80', 2,1);
+CALL PRInsertDetalle(2,'2.20', '4.40', 1,1);
+
+CALL PRInsertDetalle(1,'1.60', '1.60', 5,2);
+CALL PRInsertDetalle(1,'0.80', '0.80', 6,2);
+CALL PRInsertDetalle(1,'0.15', '0.15', 7,2);
+
+CALL PRInsertDetalle(2,'1.15', '2.30', 3,3);
+CALL PRInsertDetalle(2,'0.30', '0.60', 4,3);
+
+CALL PRInsertDetalle(3,'0.3', '0.9', 4,1);
+CALL PRInsertDetalle(4,'1.6', '6.4', 5,1);
+
+SELECT * FROM DETALLE;
